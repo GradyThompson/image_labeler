@@ -1,0 +1,26 @@
+[project]
+name = "image-labeler"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "gradythompson",email = "grady_thompson@outlook.com"}
+]
+readme = "README.md"
+requires-python = ">=3.11,<4.0"
+dependencies = [
+    "pillow (>=11.3.0,<12.0.0)",
+    "readlif (>=0.6.6,<0.7.0)",
+    "matplotlib (>=3.10.6,<4.0.0)",
+    "streamlit (==1.40)",
+    "streamlit-drawable-canvas (>=0.9.3,<0.10.0)",
+    "numpy (>=2.2,<3.0)",
+    "opencv-python-headless (>=4.12.0.88,<5.0.0.0)",
+]
+
+[tool.poetry]
+packages = [{include = "image_labeler", from = "src"}]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
