@@ -188,3 +188,56 @@ def create_max_projection(lif_file_path, image_index=0, channel=0, time=0, allow
     print(f"  Intensity range: {metadata['intensity_min']} to {metadata['intensity_max']}")
 
     return max_projection, single_slice, metadata
+
+
+def load_label_png(path: str) -> np.ndarray:
+    """
+    Load a single-channel PNG segmentation label image.
+
+    Parameters
+    ----------
+    path : str
+        Path to the label PNG file.
+
+    Returns
+    -------
+    np.ndarray
+        2D array of shape (H, W) with integer class IDs.
+    """
+    with Image.open(path) as img:
+        # Ensure no color conversion happens
+        label = np.array(img)
+
+    if label.ndim != 2:
+        raise ValueError(
+            f"Expected single-channel label image, got shape {label.shape}"
+        )
+
+    return label
+
+def save_label_png(label: np.ndarray, path: str) -> None:
+    """
+    Save a single-channel segmentation label image as a PNG.
+
+    Parameters
+    ----------
+    label : np.ndarray
+        2D array (H, W) of integer class IDs.
+        dtype should be uint8 or uint16.
+    path : str
+        Output file path (should end with .png).
+    """
+    if not isinstance(label, np.ndarray):
+        raise TypeError("label must be a numpy array")
+
+    if label.ndim != 2:
+        raise ValueError(f"Expected 2D array, got shape {label.shape}")
+
+    if label.dtype not in (np.uint8, np.uint16):
+        raise TypeError(
+            "Label dtype must be uint8 or uint16. "
+            f"Got {label.dtype}"
+        )
+
+    img = Image.fromarray(label)
+    img.save(path, format="PNG")

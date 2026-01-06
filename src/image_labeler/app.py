@@ -1,3 +1,4 @@
+import sys
 from PIL import Image
 import streamlit as st
 from streamlit_drawable_canvas import st_canvas
@@ -10,20 +11,20 @@ st.set_page_config(page_title="Image Labeler", layout="wide")
 
 @st.cache_data
 def load_and_process_image(path: str):
-    arr = image_manager.create_max_projection(lif_path, image_index=1)[0]
+    arr = image_manager.create_max_projection(path, image_index=1)[0]
 
     red_arr = np.stack([arr, np.zeros_like(arr), np.zeros_like(arr)], axis=-1)
     red_image = Image.fromarray(red_arr.astype(np.uint8))
 
     return red_image, arr.shape[0], arr.shape[1]
 
-image_name = "16012025_IL_G3_80_GSH10_chip1_explant3_confocal.lif"
+
+image_name = sys.argv[1]
 image_folder = image_manager.get_image_folder()
 lif_path = os.path.join(image_folder, image_name)
 
 red_image, height, width = load_and_process_image(lif_path)
 
-#Sidebar
 st.sidebar.header("🧰 Drawing Tools")
 
 tool = st.sidebar.radio("Select tool", ["Stroke", "Lasso"])
