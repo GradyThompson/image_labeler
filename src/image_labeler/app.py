@@ -88,9 +88,13 @@ composite = Image.alpha_composite(base_image, overlay)
 #Overlay
 st.sidebar.header("🧰 Drawing Tools")
 tool = st.sidebar.radio("Select tool", ["Stroke", "Lasso"])
-stroke_color = st.sidebar.color_picker("Stroke color", "#0000FF")
 stroke_width = st.sidebar.slider("Stroke width", 1, 30, 5)
-#TODO add erase toggle
+action = st.sidebar.radio("Select action", ["Add", "Remove"])
+
+if action == "Add":
+    stroke_color = "#0000FF"
+else:
+    stroke_color = "#FF0000"
 
 # Will save the label to the file with the name <image_name>_label_.png in the label folder
 if st.sidebar.button("Save Label (Beware will overwrite)"):
@@ -128,12 +132,13 @@ if canvas_result.image_data is not None:
     # Get drawn
     alpha = img[:, :, 3]
 
-    # TODO: add catagories for remove and add
-    drawn_mask = alpha > 0
-
-    st.session_state.label[drawn_mask] = 1
-
     if np.any(alpha > 0):
-        st.session_state.label[alpha > 0] = 1
+        drawn_mask = alpha > 0
+
+        if action == "Add":
+            st.session_state.label[drawn_mask] = 1
+        else:
+            st.session_state.label[drawn_mask] = 0
+
         st.session_state.canvas_id += 1
         st.rerun()
