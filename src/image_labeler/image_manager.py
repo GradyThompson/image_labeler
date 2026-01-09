@@ -9,6 +9,9 @@ from PIL import Image
 def get_image_folder():
     return "images"
 
+def get_label_folder():
+    return "labels"
+
 """
 Loads a red scaled PNG
 """
@@ -123,14 +126,10 @@ def create_max_projection(lif_file_path, image_index=0, channel=0, time=0, allow
                         print(f"\n💡 FOUND: Image {i} ('{other.name}') appears to be the merged version!")
                         print(f"   Recommended: Use --image {i} instead")
 
-        print(f"{'!' * 60}\n")
-
         if not allow_mosaic:
             response = input("Continue with mosaic tiles anyway? [y/N]: ").strip().lower()
             if response not in ['y', 'yes']:
                 raise ValueError("Processing cancelled. Please select a different image.")
-        else:
-            print("(Skipping prompt - processing mosaic as-is)")
 
     # Validate parameters
     if channel >= image.channels:
@@ -139,32 +138,17 @@ def create_max_projection(lif_file_path, image_index=0, channel=0, time=0, allow
     if time >= image.nt:
         raise ValueError(f"Time {time} out of range. Image has {image.nt} time points.")
 
-    print(f"Processing image: {image.name}")
-    print(f"  Channel: {channel}")
-    print(f"  Time: {time}")
-    print(f"  Z-slices: {image.nz}")
-    if is_mosaic:
-        print(f"  Mosaic tiles: {image.dims.m} (processing first tile only)")
-
     # Load all Z-slices
-    print(f"\nLoading {image.nz} Z-slices...")
     z_stack = []
 
     for z in range(image.nz):
         frame = image.get_frame(z=z, t=time, c=channel)
         z_stack.append(np.array(frame))
 
-        # Progress indicator
-        if image.nz > 10 and (z + 1) % 10 == 0:
-            print(f"  Progress: {z + 1}/{image.nz} slices loaded")
-
-    print(f"  Complete: {image.nz}/{image.nz} slices loaded")
-
     # Convert to numpy array
     z_stack = np.array(z_stack)
 
     # Create maximum intensity projection
-    print(f"\nCreating maximum intensity projection...")
     max_projection = np.max(z_stack, axis=0)
 
     # Get middle slice for comparison
@@ -183,9 +167,6 @@ def create_max_projection(lif_file_path, image_index=0, channel=0, time=0, allow
         'intensity_max': max_projection.max(),
         'middle_slice_index': middle_idx
     }
-
-    print(f"  Shape: {max_projection.shape}")
-    print(f"  Intensity range: {metadata['intensity_min']} to {metadata['intensity_max']}")
 
     return max_projection, single_slice, metadata
 
