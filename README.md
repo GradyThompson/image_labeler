@@ -9,8 +9,13 @@
 
 ## Ruinning code
 
+### File structure
+
+Keep images in the images folder and only include name when running, labels will be saved as the 
+"'image name'_label.png" in the label folder
+
 ### Command to run application
-poetry run streamlit run src/image_labeler/app.py -- --image <image name> --label <optional label file name>
+poetry run streamlit run src/image_labeler/app.py -- --image "image name" --label "optional label file name"
 
 ### Example
 
