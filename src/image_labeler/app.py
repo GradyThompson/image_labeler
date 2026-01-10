@@ -7,6 +7,7 @@ import numpy as np
 import cv2
 import os
 import argparse
+import analysis
 
 #Page config
 st.set_page_config(page_title="Image Labeler", layout="wide")
@@ -53,14 +54,10 @@ def load_and_process_image(path: str):
     return np.array(image), arr.shape[0], arr.shape[1]
 
 @st.cache_data
-def load_label(file_name: str):
-    #If existing image then load it, otherwise create a new blank one
-    if label_name is not None:
-        label_path = os.path.join(label_folder, str(file_name))
-        label = image_manager.load_label_png(label_path)
-    else:
-        label = np.zeros((height, width), dtype=np.uint8)
-    return label
+def compute_initial_guess(image_arr):
+    mono_image = image_arr[..., 0]
+    return analysis.initial_guess(mono_image)
+
 
 #Get cmd arguments
 args = parse_args()
@@ -79,7 +76,11 @@ base_image = Image.fromarray(base_image_arr)
 
 #Load or initialize label
 if "label" not in st.session_state:
-    st.session_state.label = load_label(label_name)
+    if label_name is not None:
+        label_path = os.path.join(label_folder, str(label_name))
+        st.session_state.label = image_manager.load_label_png(label_path)
+    else:
+        st.session_state.label = compute_initial_guess(base_image_arr).copy()
 
 #Setup image stack
 overlay = label_to_rgba(st.session_state.label)
