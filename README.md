@@ -9,12 +9,16 @@
 
 ## Ruinning code
 
-Command to run application
+### Command to run application
 poetry run streamlit run src/image_labeler/app.py -- --image <image name> --label <optional label file name>
 
 ### Example
 
 poetry run streamlit run src/image_labeler/app.py -- 16012025_IL_G3_80_GSH10_chip1_explant3_confocal.lif
+
+### Dependencies
+
+dependencies are managed through poetry, so should be installed using "poetry install"
 
 ## Technology
 - Streamlit + Streamlit-Drawable-Canvas
